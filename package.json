@@ -1,0 +1,28 @@
+{
+  "name": "wath-report",
+  "version": "1.0.0",
+  "description": "监控文件并报送",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shenxj1228/wath-report.git"
+  },
+  "keywords": [
+    "watch",
+    "report",
+    "file"
+  ],
+  "author": "Moonkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shenxj1228/wath-report/issues"
+  },
+  "homepage": "https://github.com/shenxj1228/wath-report#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.4.8"
+  }
+}
