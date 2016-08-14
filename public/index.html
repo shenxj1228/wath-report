@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <header style="padding:40px;">文件列表</header>
+    <header style="padding:30px;"><h2>文件列表</h2></header>
     <div class="row" style="padding-bottom:10px;">
         <div class="col-xs-3 col-md-3">文件名</div>
         <div class="col-xs-3 col-md-3">大小</div>
@@ -52,15 +52,17 @@
         }
         return easySize;
     }
+    //页面初始化获取文件
     socket.on('files', function(files) {
         var containerDom = $('.container-fluid');
         containerDom.empty();
         files.forEach(function(ele, index) {
-            var rowDom = '<div class="row"><div class="col-xs-3 col-md-3 file-name"><a target="_blank" href="/' + ele.name + '">' + ele.name + '</a></div><div class="col-xs-3 col-md-3 file-size">' + toEasySize(ele.size) + '</div><div class="col-xs-3 col-md-3 "><span class="tag tag-default tag-pill pull-xs-center change-count">' + ele.count + '</span></div><div class="col-xs-3 col-md-3 change-time">' + toLocalTime(ele.time) + '</div></div>';
+            var rowDom = '<div class="row"><div class="col-xs-3 col-md-3 file-name"><a target="_blank" href="/' + ele.name + '">' + ele.name + '</a></div><div class="col-xs-3 col-md-3 file-size">' + toEasySize(ele.size) + '</div><div class="col-xs-3 col-md-3 "><span class="badge change-count">' + ele.count + '</span></div><div class="col-xs-3 col-md-3 change-time">' + toLocalTime(ele.time) + '</div></div>';
             containerDom.append(rowDom);
         });
     });
 
+    //新文件推送信息装载
     socket.on('new file', function(newFile) {
         var rowDom = $('.container-fluid>.row:eq(' + newFile.index + ')');
         rowDom.children('.file-size').text(toEasySize(newFile.size));
