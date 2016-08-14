@@ -6,12 +6,36 @@ var path = require('path'),
     http = require('http').Server(app),
     io = require('socket.io')(http);
 
+
+
+/**
+文件对象的属性
+name：文件名称
+changeCount：修改次数，初始化0
+time：最初修改时间
+size：大小
+**/
+
+var initFilesState=[];
+(function getFilesState(){
+    cfg.files.forEach(function(element, index) {
+        var filepath = path.normalize(element);
+        var state=fs.statSync(filepath);
+        var filePty={
+            "name":path.basename(element),
+            "count":0,
+            "time":state.mtime,
+            "size":state.size
+        };
+        initFilesState.push(filePty);
+    });
+})();
+
+
+
+
 io.on('connection', function(socket) {
-    var basePaths = [];
-    for (var i = 0;  i < cfg.files.length;i++) {
-        basePaths.push(path.basename(cfg.files[i]));
-    }
-    socket.emit('files',basePaths);
+    socket.emit('files',initFilesState);
 });
 app.use(express.static('public'));
 app.use(express.static('new'));
@@ -32,6 +56,6 @@ cfg.files.forEach(function(element, index) {
     var filepath = path.normalize(element);
     fs.watchFile(filepath, function(curr, prev) {
         fs.createReadStream(filepath).pipe(fs.createWriteStream('./new/' + filepath));
-        io.emit('newFile', { 'name': path.basename(filepath), 'time': curr.mtime });
+        io.emit('new file', { 'index':index,'name': path.basename(filepath), 'time': curr.mtime,"size":curr.size });
     });
 });

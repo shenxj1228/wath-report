@@ -1,62 +1,72 @@
 <!DOCTYPE html>
 <html>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <head>
     <title>文件监听</title>
-    <style type="text/css">
-    body,
-    .iframe {
-        width: 100%;
-    }
-    
-    .file-list ul {
-        list-style: none;
-    }
-    .file-ul li {
-    	padding: 20px;
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+    .row {
+        text-align: center;
     }
     </style>
 </head>
 
 <body>
-    <div class="files">
-        <h2>文件列表：</h2>
-        <div class="file-list">
-            <ul class="file-ul">
-                <li>
-                    <button>Demo.xlsx</button>
-                </li>
-                <li>
-                    <button>Demo.xlsx</button>
-                </li>
-                <li>
-                    <button>Demo.xlsx</button>
-                </li>
-                <li>
-                    <button>Demo.xlsx</button>
-                </li>
-                <li>
-                    <button>Demo.xlsx</button>
-                </li>
-                <li>
-                    <button>Demo.xlsx</button>
-                </li>
-                <li>
-                    <button>Demo.xlsx</button>
-                </li>
-                <li>
-                    <button>Demo.xlsx</button>
-                </li>
-            </ul>
-        </div>
+    <header style="padding:40px;">文件列表</header>
+    <div class="row" style="padding-bottom:10px;">
+        <div class="col-xs-3 col-md-3">文件名</div>
+        <div class="col-xs-3 col-md-3">大小</div>
+        <div class="col-xs-3 col-md-3"><span>更改次数</span></div>
+        <div class="col-xs-3 col-md-3">上次更改时间</div>
     </div>
-   
+    <div class="container-fluid">
+    </div>
     <script type="text/javascript" src="/js/socket.io.min.js"></script>
     <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
     <script type="text/javascript">
     var socket = io();
+
+    //更改成本地时间格式
+    function toLocalTime(time) {
+        return new Date(time).toLocaleTimeString('zh-CN', {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        });
+    }
+    //更改容易识别的大小 ，例如0.1G,0.2M,3.01K
+    function toEasySize(size) {
+        var easySize;
+        if (size / (1024 * 1024 * 1024) >= 0.01) {
+            easySize = size / (1024 * 1024 * 1024).toFixed(2) + 'G';
+        } else if (size / (1024 * 1024) >= 0.01) {
+            easySize = size / (1024 * 1024).toFixed(2) + 'M';
+        } else {
+            easySize = (size / 1024).toFixed(2) + 'K';
+        }
+        return easySize;
+    }
     socket.on('files', function(files) {
-       	console.dir(files);
+        var containerDom = $('.container-fluid');
+        containerDom.empty();
+        files.forEach(function(ele, index) {
+            var rowDom = '<div class="row"><div class="col-xs-3 col-md-3 file-name"><a target="_blank" href="/' + ele.name + '">' + ele.name + '</a></div><div class="col-xs-3 col-md-3 file-size">' + toEasySize(ele.size) + '</div><div class="col-xs-3 col-md-3 "><span class="tag tag-default tag-pill pull-xs-center change-count">' + ele.count + '</span></div><div class="col-xs-3 col-md-3 change-time">' + toLocalTime(ele.time) + '</div></div>';
+            containerDom.append(rowDom);
+        });
+    });
+
+    socket.on('new file', function(newFile) {
+        var rowDom = $('.container-fluid>.row:eq(' + newFile.index + ')');
+        rowDom.children('.file-size').text(toEasySize(newFile.size));
+        rowDom.find('.change-count').text(parseInt(rowDom.find('.change-count').text(), 10) + 1);
+        rowDom.children('.change-time').text(toLocalTime(newFile.time));
+
     });
     </script>
 </body>
