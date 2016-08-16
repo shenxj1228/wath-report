@@ -44,9 +44,9 @@
     function toEasySize(size) {
         var easySize;
         if (size / (1024 * 1024 * 1024) >= 0.01) {
-            easySize = size / (1024 * 1024 * 1024).toFixed(2) + 'G';
+            easySize = (size / (1024 * 1024 * 1024)).toFixed(2) + 'G';
         } else if (size / (1024 * 1024) >= 0.01) {
-            easySize = size / (1024 * 1024).toFixed(2) + 'M';
+            easySize = (size / (1024 * 1024)).toFixed(2) + 'M';
         } else {
             easySize = (size / 1024).toFixed(2) + 'K';
         }
