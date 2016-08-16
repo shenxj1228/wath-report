@@ -1,28 +1,27 @@
 var port = chrome.extension.connect();
-var watching = false;
-(function() {
-    var watching = false;
-    if (typeof(localStorage.watching) != 'undefined' && localStorage.watching != '') {
-        watching = JSON.parse(localStorage.watching);
-    }
-    if (watching === true) {
-        $('#watch').text('Stop Watch');
-    } else if (watching === false) {
-        $('#watch').text('Watch');
-    } else {
-        $('#watch').text('Watch');
-        $('#msg').text(watching);
-    }
-})();
+
+chrome.extension.sendRequest({ do: "check" }, function(response) {
+    setWatchDom(response);
+});
 
 $('#watch').on('click', function(event) {
-    if (watching == true) {
-    	$('#watch').text('Stop Watch');
-        chrome.extension.getBackgroundPage().stopWatch();
-    } else {
-    	$('#watch').text('Watch');
-        chrome.extension.getBackgroundPage().startWatch();
-    }
     event.stopPropagation();
     event.preventDefault();
+    $('#watch').attr('disabled', 'disabled');
+    chrome.extension.sendRequest({ do: "watch" }, function(response) {
+        setWatchDom(response);
+        $('#watch').removeAttr('disabled');
+    });
 });
+
+function setWatchDom(response) {
+    if (response.status === "watching") {
+        $('#watch').text('Stop Watch');
+    } else if (response.status === "not watching") {
+        $('#watch').text('Watch');
+    } else if (response.error != null) {
+        $('#msg').text(response.error);
+    } else {
+
+    }
+}
