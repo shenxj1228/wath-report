@@ -9,6 +9,11 @@ if (typeof(localStorage.server) != 'undefined') {
 $('#watch').on('click', function(event) {
     event.stopPropagation();
     event.preventDefault();
+    if ($.trim($('#server').val()) === '') {
+        $('#msg').removeClass().addClass('error');
+        $('#msg').text('请输入监听服务地址');
+        return;
+    }
     localStorage.setItem('server', $.trim($('#server').val()).toLowerCase());
     $('#msg').removeClass().addClass('process');
     $('#msg').text('请求发送中');
@@ -26,7 +31,6 @@ function setWatchDom(response) {
         $('#msg').text('监听服务连接中');
     } else if (response.status === "not watching") {
         $('#watch').text('Watch');
-        $('#msg').text('监听服务未连接');
     } else {
 
     }
@@ -42,4 +46,3 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     if (request.error != undefined)
         $('#msg').text(request.errormsg);
 });
-
