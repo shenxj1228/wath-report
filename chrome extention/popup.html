@@ -6,6 +6,17 @@
     <title>设置</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script type="text/javascript" src="js/jquery.min.js"></script>
+    <style>
+    	.error{
+    		color:#ea1941;
+    	}
+    	.success{
+    		color:#27b11f;
+    	}
+    	.process{
+    		color:#197eea;
+    	}
+    </style>
 </head>
 
 <body>
@@ -13,12 +24,8 @@
         <input style="width:300px;display:inline-block;margin:4px;" type="text" class="form-control" id="server" placeholder="http://192.168.100.100:3300">
         <button  id="watch"  class="btn btn-primary" style="width:100px;display:inline-block;"></button>
     </div>
-    <div id="msg">
-    	
-    </div>
-    <div class="progress">
-        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%"> 
-        </div>
+    <div id="msg"  style="text-align:center;background-color:#eee;height:40px;line-height:40px;">
+    	连接状态
     </div>
     <script type="text/javascript" src="js/popup.js"></script>
 </body>

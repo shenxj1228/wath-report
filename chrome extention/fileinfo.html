@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<head>
+    <title>文件信息</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+    .row {
+        text-align: center;
+    }
+    </style>
+</head>
+
+<body>
+    <header style="padding:30px;">
+        <h2>文件列表</h2></header>
+    <div class="container-fluid">
+        <div class="input-group col-xs-offset-3 col-md-offset-3 col-xs-6 col-md-6" style="padding-bottom:30px;">
+            <input type="text" class="form-control" id="searchTxt" placeholder="Search by file name">
+            <div class="input-group-addon btn" id="searchBtn">Search</div>
+        </div>
+        <div class="row" style="padding-bottom:10px;">
+            <div class="col-xs-3 col-md-3">文件名</div>
+            <div class="col-xs-3 col-md-3">大小</div>
+            <div class="col-xs-3 col-md-3"><span>更改次数</span></div>
+            <div class="col-xs-3 col-md-3">上次更改时间</div>
+        </div>
+        <div class="content">
+            <div class="col-xs-3 col-md-3" style="text-align:center;color:red;">没有内容，是否有正在监听的文件</div>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/fileinfo.js"></script>
+</body>
+
+</html>

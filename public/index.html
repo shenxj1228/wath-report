@@ -14,13 +14,17 @@
 
 <body>
     <header style="padding:30px;"><h2>文件列表</h2></header>
+    
+    <div class="container-fluid">
     <div class="row" style="padding-bottom:10px;">
         <div class="col-xs-3 col-md-3">文件名</div>
         <div class="col-xs-3 col-md-3">大小</div>
         <div class="col-xs-3 col-md-3"><span>更改次数</span></div>
         <div class="col-xs-3 col-md-3">上次更改时间</div>
     </div>
-    <div class="container-fluid">
+    <div class="content">
+        
+    </div>
     </div>
     <script type="text/javascript" src="/js/socket.io.min.js"></script>
     <script type="text/javascript" src="/js/jquery.min.js"></script>
@@ -54,11 +58,11 @@
     }
     //页面初始化获取文件
     socket.on('files', function(files) {
-        var containerDom = $('.container-fluid');
-        containerDom.empty();
+        var contentDom = $('.content');
+        contentDom.empty();
         files.forEach(function(ele, index) {
             var rowDom = '<div class="row"><div class="col-xs-3 col-md-3 file-name"><a target="_blank" href="/' + ele.name + '">' + ele.name + '</a></div><div class="col-xs-3 col-md-3 file-size">' + toEasySize(ele.size) + '</div><div class="col-xs-3 col-md-3 "><span class="badge change-count">' + ele.count + '</span></div><div class="col-xs-3 col-md-3 change-time">' + toLocalTime(ele.time) + '</div></div>';
-            containerDom.append(rowDom);
+            contentDom.append(rowDom);
         });
     });
 
