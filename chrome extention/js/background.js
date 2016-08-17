@@ -13,7 +13,6 @@ function startWatch() {
 
         //页面初始化获取文件
         socket.on('files', function(files) {
-            console.dir(files);
             localStorage.setItem('files', JSON.stringify(files));
         });
 

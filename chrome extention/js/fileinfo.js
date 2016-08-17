@@ -11,7 +11,6 @@ var files = [];
 
 function initPage(files) {
     $('.content').empty();
-    files.sort(sortByIndex);
     files.forEach(function(element, index) {
         var Dom = '<div class="row"><div class="col-xs-3 col-md-3 file-name"><a target="_blank" href="' + localStorage.server + '/' + element.name + '">' + element.name + '</a></div><div class="col-xs-3 col-md-3 file-size">' + toEasySize(element.size) + '</div><div class="col-xs-3 col-md-3 "><span class="badge change-count">' + element.count + '</span></div><div class="col-xs-3 col-md-3 change-time">' + toLocalTime(element.time) + '</div></div>';
         $('.content').append(Dom);
@@ -44,14 +43,14 @@ function searchFile(strSearch, fileArray) {
     fileArray.forEach(function(element, index) {
         var match = element.name.search(regexp);
         if (match > -1) {
-            result.push({ 'index': match, 'file': element });
+            result.push({ 'sortInx': match, 'file': element,'index':index });
         }
     });
     return result.sort(sortByIndex);
 }
 
 function sortByIndex(a, b) {
-    return a.index - b.index;
+    return a.sortInx - b.sortInx;
 }
 
 //更改成本地时间格式

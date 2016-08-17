@@ -16,11 +16,14 @@ changeCount：修改次数，初始化0
 time：最初修改时间
 size：大小
 **/
-
+var checkedCfg = [];
 var initFilesState = [];
 (function getFilesState() {
     cfg.files.forEach(function(element, index) {
         var filepath = path.normalize(element);
+        if(!fs.existsSync(filepath)){
+            return;
+        }
         var state = fs.statSync(filepath);
         var filePty = {
             "name": path.basename(element),
@@ -28,14 +31,17 @@ var initFilesState = [];
             "time": state.mtime,
             "size": state.size
         };
-        initFilesState.push(filePty);
-        fs.createReadStream(filepath).pipe(fs.createWriteStream('./new/' + path.basename(element), {
-            'flags': 'w',
-            'defaultEncoding': 'utf8',
-            'fd': null,
-            'mode': 0o666,
-            'autoClose': true
-        }));
+        if (state.isFile()) {
+            checkedCfg.push(element);
+            initFilesState.push(filePty);
+            fs.createReadStream(filepath).pipe(fs.createWriteStream('./new/' + path.basename(element), {
+                'flags': 'w',
+                'defaultEncoding': 'utf8',
+                'fd': null,
+                'mode': 0o666,
+                'autoClose': true
+            }));
+        }
     });
 })();
 
@@ -76,7 +82,7 @@ http.listen(cfg.port, function() {
 });
 
 
-cfg.files.forEach(function(element, index) {
+checkedCfg.forEach(function(element, index) {
     var filepath = path.normalize(element);
     var filename = path.basename(element);
     fs.watchFile(filepath, function(curr, prev) {
@@ -87,6 +93,12 @@ cfg.files.forEach(function(element, index) {
             'mode': 0o666,
             'autoClose': true
         }));
-        io.emit('new file', { 'index': index, 'name': path.basename(filepath), 'time': curr.mtime, "size": curr.size });
+        initFilesState[index] = {
+            "name": filename,
+            "count": 0,
+            "time": curr.mtime,
+            "size": curr.size
+        };
+        io.emit('new file', { 'index': index, 'name': filename, 'time': curr.mtime, "size": curr.size });
     });
 });
