@@ -16,12 +16,6 @@ var files = [];
         if (response.status === 'watching' && typeof(localStorage.files) != 'undefined' && localStorage.files != '') {
             files = JSON.parse(localStorage.files);
             initPage(files);
-            var searchTxt = $.getUrlParam('searchTxt');
-            if (typeof(searchTxt) != 'undefined' && searchTxt != null) {
-                $('#searchTxt').val(decodeURIComponent(searchTxt));
-                $('.text-clear').addClass('available');
-                showSearchResult(searchFile(decodeURIComponent(searchTxt), files));
-            }
         }
     });
 })();
@@ -35,6 +29,12 @@ function initPage(files) {
         $('.content').append(listDom);
 
     });
+    var searchTxt = $.getUrlParam('searchTxt');
+    if (typeof(searchTxt) != 'undefined' && searchTxt != null) {
+        $('#searchTxt').val(decodeURIComponent(searchTxt));
+        $('.text-clear').addClass('available');
+        showSearchResult(searchFile(decodeURIComponent(searchTxt), files));
+    }
 }
 
 $('#searchTxt').on('input', function(event) {
@@ -144,3 +144,9 @@ function toEasySize(size) {
     }
     return easySize;
 }
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+    if (request.status = 'new file') {
+        files=JSON.parse(localStorage.files);
+        initPage(files);
+    }
+});
