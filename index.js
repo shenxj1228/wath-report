@@ -36,6 +36,7 @@ var initFilesState = [];
             initFilesState.push(filePty);
             fs.createReadStream(filepath).pipe(fs.createWriteStream('./new/' + path.basename(element), {
                 'flags': 'w',
+                'encoding': 'utf8',
                 'defaultEncoding': 'utf8',
                 'fd': null,
                 'mode': 0o666,
@@ -57,6 +58,7 @@ function urlEncodeChinese(req, res, next) {
 
     //  console.log(decodeurlchinese.path);  
     req.url = req.originalUrl = decodeurlchinese.path;
+    
     next();
 }
 
@@ -88,6 +90,7 @@ checkedCfg.forEach(function(element, index) {
     fs.watchFile(filepath, function(curr, prev) {
         fs.createReadStream(filepath).pipe(fs.createWriteStream('./new/' + filename, {
             'flags': 'w',
+            'encoding': 'utf8',
             'defaultEncoding': 'utf8',
             'fd': null,
             'mode': 0o666,

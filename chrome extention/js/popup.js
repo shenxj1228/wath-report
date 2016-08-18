@@ -24,6 +24,12 @@ $('#watch').on('click', function(event) {
     });
 });
 
+$('#toFileList').on('click', function(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    chrome.tabs.create({ url: 'fileinfo.html' }, function() {});
+});
+
 function setWatchDom(response) {
     if (response.status === "watching") {
         $('#watch').text('Stop Watch');

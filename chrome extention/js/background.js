@@ -29,8 +29,10 @@ function startWatch() {
             var notification = chrome.notifications.create('', { type: 'basic', iconUrl: 'images/48.png', 'title': newFile.name + '发生变更', 'message': newFile.name + '\n大小：' + toEasySize(newFile.size) + '，\n更改时间：' + toLocalTime(newFile.time) + ' .' }, function(notificationId) {
                 chrome.notifications.onClicked.addListener(function(id) {
                     if (id === notificationId) {
-                    	chrome.tabs.create({url:'fileinfo.html'}, function(){});
+                        var fileinfourl = 'fileinfo.html?searchTxt=' + encodeURIComponent(encodeURIComponent(newFile.name));
+                        chrome.tabs.create({ url: fileinfourl }, function() {});
                         chrome.notifications.clear(notificationId, function() {});
+
                     }
                 });
             });

@@ -9,6 +9,71 @@
     <style>
     .row {
         text-align: center;
+        padding: 10px 0;
+    }
+    
+    #searchTxt {
+        padding-right: 30px!important;
+    }
+    .file-name{
+        font-size: 18px;
+    }
+    .search-result {
+        width: 100%;
+        list-style: none;
+        padding-left: 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background: #fff;
+    }
+    
+    .search-result li:first-child {
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+    
+    .search-result li:last-child {
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .search-result li {
+        padding: 5px 0;
+        cursor: pointer;
+        padding-left: 0;
+        transition: padding-left .2s;
+    }
+    
+    .search-result li:hover {
+        background-color: #3399e4;
+        padding-left: 4px;
+    }
+    
+    .search-out {
+        margin-top: -28px;
+        position: absolute;
+        padding-right: 100px;
+        padding-left: 0!important;
+        z-index: 99;
+        display: none;
+    }
+    
+    .available {
+        display: initial!important;
+    }
+    
+    .text-clear {
+        position: absolute;
+        margin-left: -30px!important;
+        z-index: 20;
+        line-height: 25px;
+        height: 25px;
+        color: #777;
+        text-align: center;
+        margin: 5px 0;
+        cursor: pointer;
+        width: 25px;
+        display: none;
     }
     </style>
 </head>
@@ -19,7 +84,13 @@
     <div class="container-fluid">
         <div class="input-group col-xs-offset-3 col-md-offset-3 col-xs-6 col-md-6" style="padding-bottom:30px;">
             <input type="text" class="form-control" id="searchTxt" placeholder="Search by file name">
+            <span class="text-clear">X</span>
             <div class="input-group-addon btn" id="searchBtn">Search</div>
+        </div>
+        <div class=" col-xs-offset-3 col-md-offset-3 col-xs-6 col-md-6 search-out">
+            <ul class="search-result">
+               
+            </ul>
         </div>
         <div class="row" style="padding-bottom:10px;">
             <div class="col-xs-3 col-md-3">文件名</div>
