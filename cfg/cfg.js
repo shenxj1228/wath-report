@@ -4,8 +4,7 @@ var cfg={
 	"port":3300,
 	"files":[
 	"./demo.txt",
-	"./demo2.txt",
-	"./我.txt"
+	"./demo2.txt"
 	]
 }
 module.exports=cfg;
