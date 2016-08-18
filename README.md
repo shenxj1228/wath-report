@@ -10,5 +10,7 @@
 
 ` node index.js `
 ### 可以使用forever进行常驻
+
 ` npm install -g forever `
+
 ` forever start index.js `
