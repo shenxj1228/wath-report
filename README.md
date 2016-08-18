@@ -6,6 +6,6 @@
 
 # useage
 
-` npm install
+` npm install `
 
-` forever start index.js
+` forever start index.js `
