@@ -1,30 +1,35 @@
 var port = chrome.extension.connect();
+var msgDom = $('#msg'),
+    watchDom = $('#watch'),
+    serverDom = $('#server'),
+    tofileListDom=$('#toFileList');
 
 chrome.extension.sendRequest({ do: "check" }, function(response) {
     setWatchDom(response);
 });
+
 if (typeof(localStorage.server) != 'undefined') {
-    $('#server').val(localStorage.getItem('server'));
+    serverDom.val(localStorage.getItem('server'));
 }
-$('#watch').on('click', function(event) {
+watchDom.on('click', function(event) {
     event.stopPropagation();
     event.preventDefault();
-    if ($.trim($('#server').val()) === '') {
-        $('#msg').removeClass().addClass('error');
-        $('#msg').text('请输入监听服务地址');
+    if ($.trim(serverDom.val()) === '') {
+        msgDom.removeClass().addClass('error');
+        msgDom.text('请输入监听服务地址');
         return;
     }
-    localStorage.setItem('server', $.trim($('#server').val()).toLowerCase());
-    $('#msg').removeClass().addClass('process');
-    $('#msg').text('请求发送中');
-    $('#watch').attr('disabled', 'disabled');
+    localStorage.setItem('server', $.trim(serverDom.val()).toLowerCase());
+    msgDom.removeClass().addClass('process');
+    msgDom.text('请求发送中');
+    watchDom.attr('disabled', 'disabled');
     chrome.extension.sendRequest({ do: "watch" }, function(response) {
         setWatchDom(response);
-        $('#watch').removeAttr('disabled');
+        watchDom.removeAttr('disabled');
     });
 });
 
-$('#toFileList').on('click', function(event) {
+tofileListDom.on('click', function(event) {
     event.stopPropagation();
     event.preventDefault();
     chrome.tabs.create({ url: 'fileinfo.html' }, function() {});
@@ -32,23 +37,27 @@ $('#toFileList').on('click', function(event) {
 
 function setWatchDom(response) {
     if (response.status === "watching") {
-        $('#watch').text('Stop Watch');
-        $('#msg').removeClass().addClass('success');
-        $('#msg').text('监听服务连接中');
+        watchDom.text('Stop Watch');
+        serverDom.attr('disabled', 'disabled');
+        tofileListDom.parent().removeClass('available').addClass('available');
+        msgDom.text('监听中');
     } else if (response.status === "not watching") {
-        $('#watch').text('Watch');
-    } else {
-
+        watchDom.text('Watch');
+        serverDom.removeAttr('disabled');
+        tofileListDom.parent().removeClass('available');
     }
 }
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     if (request.error === '1000') {
-        $('#msg').removeClass().addClass('error');
+        msgDom.removeClass().addClass('error');
     } else if (request.error === '0000') {
-        $('#msg').removeClass().addClass('success');
+        msgDom.removeClass().addClass('success');
     } else if (request.error === '9999') {
-        $('#msg').removeClass().addClass('process');
+        msgDom.removeClass().addClass('process');
+         watchDom.text('Watch');
+        serverDom.removeAttr('disabled');
+        tofileListDom.parent().removeClass('available');
     }
     if (request.error != undefined)
-        $('#msg').text(request.errormsg);
+        msgDom.text(request.errormsg);
 });

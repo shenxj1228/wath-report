@@ -1,4 +1,8 @@
-var files = [];
+var files = [],
+    contentDom = $('.content'),
+    searchResultDom = $('.search-result'),
+    searchTxtDom = $('#searchTxt'),
+    textClearDom = $('.text-clear');
 
 //获取参数
 (function($) {
@@ -20,42 +24,44 @@ var files = [];
     });
 })();
 
+var searchTxtParam = $.getUrlParam('searchTxt');
 
 function initPage(files) {
-    $('.content').empty();
-    $('.search-result').empty();
+    contentDom.empty();
+    searchResultDom.empty();
     files.forEach(function(element, index) {
         var listDom = '<div class="row"><div class="col-xs-3 col-md-3 file-name"><a target="_blank" href="' + localStorage.server + '/' + element.name + '">' + element.name + '</a></div><div class="col-xs-3 col-md-3 file-size">' + toEasySize(element.size) + '</div><div class="col-xs-3 col-md-3 "><span class="badge change-count">' + element.count + '</span></div><div class="col-xs-3 col-md-3 change-time">' + toLocalTime(element.time) + '</div></div>';
-        $('.content').append(listDom);
+        contentDom.append(listDom);
 
     });
-    var searchTxt = $.getUrlParam('searchTxt');
-    if (typeof(searchTxt) != 'undefined' && searchTxt != null) {
-        $('#searchTxt').val(decodeURIComponent(searchTxt));
-        $('.text-clear').addClass('available');
-        showSearchResult(searchFile(decodeURIComponent(searchTxt), files));
+
+    if (typeof(searchTxtParam) != 'undefined' && searchTxtParam != null) {
+        searchTxtDom.val(decodeURIComponent(searchTxtParam));
+        textClearDom.addClass('available');
+        showSearchResult(searchFile(decodeURIComponent(searchTxtParam), files));
     }
 }
 
-$('#searchTxt').on('input', function(event) {
+searchTxtDom.on('input', function(event) {
     showSearchList();
 });
 
-$('#searchTxt').on('focus', function(event) {
+searchTxtDom.on('focus', function(event) {
     showSearchList();
 });
 
-$('#searchTxt').on('blur', function(event) {
+searchTxtDom.on('blur', function(event) {
     $('.search-out').removeClass('available');
 });
-$('.text-clear').on('click', function(event) {
-    $('#searchTxt').val('');
+textClearDom.on('click', function(event) {
+    searchTxtDom.val('');
+    searchTxtParam = '';
     initPage(files);
     $(this).removeClass('available');
 });
 
-$('.search-result').on('mousedown', ' li', function(event) {
-    $('#searchTxt').val($(this).text());
+searchResultDom.on('mousedown', ' li', function(event) {
+    searchTxtDom.val($(this).text());
     $('.search-out').removeClass('available');
     var array = searchFile($(this).text(), files);
     showSearchResult(searchFile($(this).text(), files));
@@ -64,7 +70,7 @@ $('.search-result').on('mousedown', ' li', function(event) {
 $('#searchBtn').on('click', function(event) {
     event.stopPropagation();
     event.preventDefault();
-    var searchText = $.trim($('#searchTxt').val());
+    var searchText = $.trim(searchTxtDom.val());
     if (searchText != '') {
         showSearchResult(searchFile(searchText, files));
     } else {
@@ -89,14 +95,12 @@ function showSearchResult(fileArray) {
     $('.content>.row').css('display', 'none');
     if (fileArray.length > 0) {
         fileArray.forEach(function(element, index) {
-            $('.content').children().eq(element.index).css('display', 'block');
+            contentDom.children().eq(element.index).css('display', 'block');
         });
     }
 }
 
 function showSearchList() {
-    var searchResultDom = $('.search-result');
-    var searchTxtDom = $('#searchTxt');
     if (searchTxtDom.val() != '') {
         searchResultDom.empty();
         searchResultDom.parent().removeClass('available').addClass('available');
@@ -111,7 +115,7 @@ function showSearchList() {
             searchResultDom.append('<small><i>最多显示10条查询结果</i></small>');
         }
         if (searchTxtDom.val() != '') {
-            $('.text-clear').removeClass('available').addClass('available');
+            textClearDom.removeClass('available').addClass('available');
         }
     }
 }
@@ -144,9 +148,12 @@ function toEasySize(size) {
     }
     return easySize;
 }
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-    if (request.status = 'new file') {
-        files=JSON.parse(localStorage.files);
+    if (request.status === 'new file' || request.error === '0000') {
+        files = JSON.parse(localStorage.files);
         initPage(files);
+    } else if (request.error === '9999') {
+        window.location.reload();
     }
 });

@@ -5,10 +5,11 @@ function startWatch() {
     if (typeof(localStorage.server) != 'undefined' && localStorage.server != '') {
         socket = io.connect(localStorage.server);
         socket.on('connect', function(msg) {
-            chrome.extension.sendRequest({ error: '0000', errormsg: '连接监听服务成功' });
+            chrome.extension.sendRequest({ error: '0000', errormsg: '正在监听文件' });
         });
         socket.on('connect_error', function(err) {
             chrome.extension.sendRequest({ error: '1000', errormsg: '无法连接监听服务' });
+            localStorage.setItem('files', '');
         });
 
         //页面初始化获取文件
@@ -27,7 +28,14 @@ function startWatch() {
             };
             localStorage.setItem('files', JSON.stringify(files));
             chrome.extension.sendRequest({ status: 'new file' }, function(response) {});
-            var notification = chrome.notifications.create('', { type: 'basic', iconUrl: 'images/48.png', 'title': newFile.name + '发生变更', 'message': newFile.name + '\n大小：' + toEasySize(newFile.size) + '，\n更改时间：' + toLocalTime(newFile.time) + ' .' }, function(notificationId) {
+            var notificationOption = {
+                type: 'basic',
+                iconUrl: 'images/48.png',
+                title: newFile.name + '发生变更',
+                message: newFile.name + '\n大小：' + toEasySize(newFile.size) + '，\n更改时间：' + toLocalTime(newFile.time) + ' .'
+            }
+            chrome.notifications.clear('1228', function() {});
+            chrome.notifications.create('1228', notificationOption, function(notificationId) {
                 chrome.notifications.onClicked.addListener(function(id) {
                     if (id === notificationId) {
                         var fileinfourl = 'fileinfo.html?searchTxt=' + encodeURIComponent(encodeURIComponent(newFile.name));
@@ -47,7 +55,7 @@ function startWatch() {
 function stopWatch() {
     socket.disconnect();
     socket = null;
-    chrome.extension.sendRequest({ error: '9999', errormsg: '取消连接监听服务' });
+    chrome.extension.sendRequest({ error: '9999', errormsg: '断开连接' });
 }
 //更改成本地时间格式
 function toLocalTime(time) {
