@@ -5,5 +5,7 @@
 通过node的文件模块监控文件变化，并通过socket广播
 
 # useage
+
 ` npm install
+
 ` forever start index.js
