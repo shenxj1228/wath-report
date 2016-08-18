@@ -8,4 +8,4 @@
 
 ` npm install `
 
-` forever start index.js `
+` node index.js `

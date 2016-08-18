@@ -21,7 +21,7 @@ var initFilesState = [];
 (function getFilesState() {
     cfg.files.forEach(function(element, index) {
         var filepath = path.normalize(element);
-        if(!fs.existsSync(filepath)){
+        if (!fs.existsSync(filepath)) {
             return;
         }
         var state = fs.statSync(filepath);
@@ -31,6 +31,11 @@ var initFilesState = [];
             "time": state.mtime,
             "size": state.size
         };
+
+        if (!fs.existsSync('./new')) {
+            fs.mkdirSync('./new');
+        }
+
         if (state.isFile()) {
             checkedCfg.push(element);
             initFilesState.push(filePty);
@@ -58,7 +63,7 @@ function urlEncodeChinese(req, res, next) {
 
     //  console.log(decodeurlchinese.path);  
     req.url = req.originalUrl = decodeurlchinese.path;
-    
+
     next();
 }
 
