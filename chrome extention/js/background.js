@@ -1,5 +1,5 @@
 chrome.browserAction.setPopup({ popup: 'popup.html' });
-var socket;
+var socket, count = 0;
 
 function startWatch() {
     if (typeof(localStorage.server) != 'undefined' && localStorage.server != '') {
@@ -19,6 +19,7 @@ function startWatch() {
 
         //新文件推送信息装载
         socket.on('new file', function(newFile) {
+            count++;
             var files = JSON.parse(localStorage.getItem('files'));
             files[newFile.index] = {
                 "name": newFile.name,
@@ -34,20 +35,23 @@ function startWatch() {
                 title: newFile.name + '发生变更',
                 message: newFile.name + '\n大小：' + toEasySize(newFile.size) + '，\n更改时间：' + toLocalTime(newFile.time) + ' .'
             }
-            chrome.notifications.clear('1228', function() {});
-            chrome.notifications.create('1228', notificationOption, function(notificationId) {
-                chrome.notifications.onClicked.addListener(function(id) {
-                    if (id === notificationId) {
-                        var fileinfourl = 'fileinfo.html?searchTxt=' + encodeURIComponent(encodeURIComponent(newFile.name));
-                        chrome.tabs.create({ url: fileinfourl }, function() {});
-                        chrome.notifications.clear(notificationId, function() {});
-                    }
-                });
-
-                setTimeout(function() {
-                    chrome.notifications.clear(notificationId, function() {});
-                }, 10000);
+            chrome.notifications.clear('1228', function() {
+                chrome.notifications.create('1228', notificationOption, function(notificationId) {});
             });
+            chrome.notifications.onClicked.addListener(function(id) {
+                if (id === '1228') {
+                    var fileinfourl = 'fileinfo.html?searchTxt=' + encodeURIComponent(encodeURIComponent(newFile.name));
+                    chrome.tabs.create({ url: fileinfourl }, function() {});
+                }
+            });
+            var badgeText;
+            if (count > 999) {
+                badgeText = count.toString().substring(0, 1) + '...';
+            } else {
+                badgeText = count.toString();
+            }
+            chrome.browserAction.setBadgeText({ 'text': badgeText });
+
         });
     }
 }
@@ -83,16 +87,24 @@ function toEasySize(size) {
 }
 
 function sendSocketStatus(sendResponse) {
+    console.dir(socket);
     if (typeof(socket) === 'undefined' || socket === null) {
         sendResponse({ status: 'not watching' });
     } else {
         sendResponse({ status: 'watching' });
+        if (socket.connected && !socket.disconnected) {
+            sendResponse({ error: '0000', errormsg: '正在监听文件' });
+        } else {
+            sendResponse({ error: '1000', errormsg: '无法连接监听服务' });
+        }
     }
 }
 
 chrome.extension.onRequest.addListener(
     function(request, sender, sendResponse) {
         if (request.do === 'watch') {
+            count = 0;
+            chrome.browserAction.setBadgeText({ 'text': '' });
             if (typeof(socket) != 'undefined' && socket != null) {
                 stopWatch();
             } else {

@@ -2,7 +2,7 @@ var port = chrome.extension.connect();
 var msgDom = $('#msg'),
     watchDom = $('#watch'),
     serverDom = $('#server'),
-    tofileListDom=$('#toFileList');
+    tofileListDom = $('#toFileList');
 
 chrome.extension.sendRequest({ do: "check" }, function(response) {
     setWatchDom(response);
@@ -40,10 +40,10 @@ function setWatchDom(response) {
         watchDom.text('Stop Watch');
         serverDom.attr('disabled', 'disabled');
         tofileListDom.parent().removeClass('available').addClass('available');
-        msgDom.text('监听中');
     } else if (response.status === "not watching") {
         watchDom.text('Watch');
         serverDom.removeAttr('disabled');
+        msgDom.text('未连接监听服务');
         tofileListDom.parent().removeClass('available');
     }
 }
@@ -53,8 +53,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     } else if (request.error === '0000') {
         msgDom.removeClass().addClass('success');
     } else if (request.error === '9999') {
-        msgDom.removeClass().addClass('process');
-         watchDom.text('Watch');
+        msgDom.removeClass();
+        watchDom.text('Watch');
         serverDom.removeAttr('disabled');
         tofileListDom.parent().removeClass('available');
     }
